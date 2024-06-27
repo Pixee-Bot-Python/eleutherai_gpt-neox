@@ -23,9 +23,9 @@ import os
 import re
 import shutil
 import time
-import random
 import sys
 import numpy as np
+import secrets
 
 try:
     import boto3
@@ -195,7 +195,7 @@ def save_ds_checkpoint(iteration, model, neox_args):
     }
     # rng states.
     if not neox_args.no_save_rng:
-        sd["random_rng_state"] = random.getstate()
+        sd["random_rng_state"] = secrets.SystemRandom().getstate()
         sd["np_rng_state"] = np.random.get_state()
         sd["torch_rng_state"] = torch.get_rng_state()
         sd["cuda_rng_state"] = torch.cuda.get_rng_state()
@@ -461,7 +461,7 @@ def load_checkpoint(
     # rng states.
     if not neox_args.finetune and not neox_args.no_load_rng:
         try:
-            random.setstate(state_dict["random_rng_state"])
+            secrets.SystemRandom().setstate(state_dict["random_rng_state"])
             np.random.set_state(state_dict["np_rng_state"])
             torch.set_rng_state(state_dict["torch_rng_state"])
             torch.cuda.set_rng_state(state_dict["cuda_rng_state"])
